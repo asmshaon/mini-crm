@@ -1,5 +1,5 @@
 import Image from "next/image";
 
 export default function Home() {
-  return <div>Mini CRM</div>;
+  return <div>Mini CRM 2</div>;
 }
