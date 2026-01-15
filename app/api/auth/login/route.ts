@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import type { AuthResponse } from "@/lib/types";
+import type { AuthResponse, User } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
   try {
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password (simple comparison - in production use bcrypt)
-    if (user.password !== password) {
+    if ((user as User & { password: string }).password !== password) {
       return NextResponse.json(
         { success: false, message: "Invalid email or password" } as AuthResponse,
         { status: 401 }
