@@ -1,36 +1,42 @@
-import { supabase } from "@/lib/supabase";
+"use client";
 
-type Joke = {
-  id: number;
-  text: string;
-  created_at: string;
-};
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Navbar } from "@/components/navbar";
+import { useAuth } from "@/lib/auth-context";
+import { LayoutDashboard } from "lucide-react";
 
-async function getJokes() {
-  const { data, error } = await supabase.from("jokes").select("*").limit(10);
+export default function Home() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
 
-  console.log(">>>>>>>>>>>>>>>>>>", data);
-
-  if (error) throw new Error(`Failed to fetch jokes: ${error.message}`);
-
-  return data as Joke[];
-}
-
-export default async function Home() {
-  const jokes = await getJokes();
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/customers");
+    }
+  }, [user, loading, router]);
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">Jokes App</h1>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {jokes.map((joke) => (
-          <div key={joke.id} className="border rounded-lg p-4 shadow-sm">
-            <p className="text-gray-800">{joke.text}</p>
-            <p className="text-sm text-gray-400 mt-2">
-              {new Date(joke.created_at).toLocaleDateString()}
-            </p>
+    <div className="min-h-screen bg-gray-50">
+      <Navbar />
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-100">
+            <LayoutDashboard className="h-10 w-10 text-blue-600" />
           </div>
-        ))}
+          <h1 className="mt-6 text-4xl font-bold tracking-tight text-gray-900">
+            Customer Management System
+          </h1>
+          <p className="mt-4 text-lg text-gray-600">
+            A simple and powerful CRM to manage your customers efficiently
+          </p>
+          <div className="mt-8">
+            <Button size="lg" onClick={() => router.push("/login")}>
+              Login to Get Started
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
