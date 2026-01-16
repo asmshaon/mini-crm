@@ -11,6 +11,8 @@ import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/navbar";
 import { formatDate, getStatusColor, debounce } from "@/lib/utils";
 import type { Customer } from "@/lib/types";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ui/dialog";
 
 export default function CustomersPage() {
   const router = useRouter();
@@ -20,6 +22,11 @@ export default function CustomersPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; customerId: string | null; customerName: string }>({
+    isOpen: false,
+    customerId: null,
+    customerName: "",
+  });
 
   const fetchCustomers = async () => {
     setLoading(true);
@@ -53,15 +60,38 @@ export default function CustomersPage() {
     debouncedSearch(value);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this customer?")) return;
+  const handleDelete = (id: string, name: string) => {
+    setDeleteDialog({ isOpen: true, customerId: id, customerName: name });
+  };
+
+  const confirmDelete = async () => {
+    const { customerId } = deleteDialog;
+    if (!customerId) return;
+
+    const toastId = toast.loading("Deleting customer...");
 
     try {
-      await fetch(`/api/customers/${id}`, { method: "DELETE" });
+      const response = await fetch(`/api/customers/${customerId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        toast.error("Failed to delete customer", { id: toastId });
+        setDeleteDialog({ isOpen: false, customerId: null, customerName: "" });
+        return;
+      }
+
+      toast.success("Customer deleted successfully", { id: toastId });
+      setDeleteDialog({ isOpen: false, customerId: null, customerName: "" });
       fetchCustomers();
     } catch (error) {
-      console.error("Failed to delete customer:", error);
+      toast.error("Failed to delete customer", { id: toastId });
+      setDeleteDialog({ isOpen: false, customerId: null, customerName: "" });
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialog({ isOpen: false, customerId: null, customerName: "" });
   };
 
   return (
@@ -171,7 +201,7 @@ export default function CustomersPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDelete(customer.id)}
+                      onClick={() => handleDelete(customer.id, customer.name)}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -205,6 +235,17 @@ export default function CustomersPage() {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        title="Delete Customer"
+        description={`Are you sure you want to delete "${deleteDialog.customerName}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        variant="danger"
+      />
     </div>
   );
 }

@@ -13,6 +13,8 @@ import { Select } from "@/components/ui/select";
 import { Navbar } from "@/components/navbar";
 import { formatDateTime } from "@/lib/utils";
 import type { Customer, CustomerStatus } from "@/lib/types";
+import { toast } from "sonner";
+import { ConfirmDialog } from "@/components/ui/dialog";
 
 export default function CustomerDetailPage() {
   const router = useRouter();
@@ -31,7 +33,7 @@ export default function CustomerDetailPage() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState(false);
 
   useEffect(() => {
     fetchCustomer();
@@ -66,8 +68,8 @@ export default function CustomerDetailPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setSaving(true);
+
+    const toastId = toast.loading("Saving customer...");
 
     try {
       const response = await fetch(`/api/customers/${id}`, {
@@ -79,27 +81,46 @@ export default function CustomerDetailPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to update customer");
+        toast.error(data.error || "Failed to update customer", { id: toastId });
+        return;
       }
 
       setCustomer(data.data);
-      alert("Customer updated successfully");
+      toast.success("Customer updated successfully", { id: toastId });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update customer");
-    } finally {
-      setSaving(false);
+      toast.error("Failed to update customer", { id: toastId });
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this customer?")) return;
+  const handleDelete = () => {
+    setDeleteDialog(true);
+  };
+
+  const confirmDelete = async () => {
+    const toastId = toast.loading("Deleting customer...");
 
     try {
-      await fetch(`/api/customers/${id}`, { method: "DELETE" });
-      router.push("/customers");
+      const response = await fetch(`/api/customers/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        toast.error("Failed to delete customer", { id: toastId });
+        setDeleteDialog(false);
+        return;
+      }
+
+      toast.success("Customer deleted successfully", { id: toastId });
+      setDeleteDialog(false);
+      setTimeout(() => router.push("/customers"), 500);
     } catch (err) {
-      setError("Failed to delete customer");
+      toast.error("Failed to delete customer", { id: toastId });
+      setDeleteDialog(false);
     }
+  };
+
+  const cancelDelete = () => {
+    setDeleteDialog(false);
   };
 
   if (loading) {
@@ -147,12 +168,6 @@ export default function CustomerDetailPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <div className="rounded-md bg-red-50 p-3 text-sm text-red-800">
-                  {error}
-                </div>
-              )}
-
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name *</Label>
@@ -228,9 +243,7 @@ export default function CustomerDetailPage() {
               </div>
 
               <div className="flex gap-3">
-                <Button type="submit" disabled={saving}>
-                  {saving ? "Saving..." : "Save Changes"}
-                </Button>
+                <Button type="submit">Save Changes</Button>
                 <Link href="/customers">
                   <Button type="button" variant="outline">
                     Cancel
@@ -250,6 +263,17 @@ export default function CustomerDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      <ConfirmDialog
+        isOpen={deleteDialog}
+        title="Delete Customer"
+        description={`Are you sure you want to delete "${customer?.name}"? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+        variant="danger"
+      />
     </div>
   );
 }

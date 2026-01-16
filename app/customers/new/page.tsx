@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select } from "@/components/ui/select";
 import { Navbar } from "@/components/navbar";
 import type { CustomerStatus } from "@/lib/types";
+import { toast } from "sonner";
 
 export default function NewCustomerPage() {
   const router = useRouter();
@@ -24,13 +25,11 @@ export default function NewCustomerPage() {
     status: "active" as CustomerStatus,
     notes: "",
   });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-    setLoading(true);
+
+    const toastId = toast.loading("Creating customer...");
 
     try {
       const response = await fetch("/api/customers", {
@@ -42,14 +41,14 @@ export default function NewCustomerPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Failed to create customer");
+        toast.error(data.error || "Failed to create customer", { id: toastId });
+        return;
       }
 
-      router.push("/customers");
+      toast.success("Customer created successfully", { id: toastId });
+      setTimeout(() => router.push("/customers"), 500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create customer");
-    } finally {
-      setLoading(false);
+      toast.error("Failed to create customer", { id: toastId });
     }
   };
 
@@ -73,12 +72,6 @@ export default function NewCustomerPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
-              {error && (
-                <div className="rounded-md bg-red-50 p-3 text-sm text-red-800">
-                  {error}
-                </div>
-              )}
-
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name *</Label>
@@ -154,9 +147,7 @@ export default function NewCustomerPage() {
               </div>
 
               <div className="flex gap-3">
-                <Button type="submit" disabled={loading}>
-                  {loading ? "Creating..." : "Create Customer"}
-                </Button>
+                <Button type="submit">Create Customer</Button>
                 <Link href="/customers">
                   <Button type="button" variant="outline">
                     Cancel

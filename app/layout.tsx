@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/lib/auth-context";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "CRM - Customer Management System",
@@ -16,6 +17,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased">
         <AuthProvider>{children}</AuthProvider>
+        <Toaster position="top-right" />
       </body>
     </html>
   );
