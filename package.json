@@ -11,6 +11,7 @@
     "db:reset": "echo 'Run: DROP TABLE IF EXISTS public.customers, public.profiles CASCADE; then run migration again'"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.90.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.562.0",
     "next": "16.1.1",
