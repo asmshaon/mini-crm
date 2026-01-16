@@ -15,14 +15,17 @@ import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/dialog";
 
 export default function CustomersPage() {
-  const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; customerId: string | null; customerName: string }>({
+  const [deleteDialog, setDeleteDialog] = useState<{
+    isOpen: boolean;
+    customerId: string | null;
+    customerName: string;
+  }>({
     isOpen: false,
     customerId: null,
     customerName: "",
@@ -47,7 +50,7 @@ export default function CustomersPage() {
 
   useEffect(() => {
     fetchCustomers();
-  }, [page]);
+  });
 
   const debouncedSearch = debounce((value: string) => {
     setSearch(value);
@@ -84,7 +87,7 @@ export default function CustomersPage() {
       toast.success("Customer deleted successfully", { id: toastId });
       setDeleteDialog({ isOpen: false, customerId: null, customerName: "" });
       fetchCustomers();
-    } catch (error) {
+    } catch {
       toast.error("Failed to delete customer", { id: toastId });
       setDeleteDialog({ isOpen: false, customerId: null, customerName: "" });
     }

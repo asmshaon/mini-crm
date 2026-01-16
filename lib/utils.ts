@@ -25,20 +25,6 @@ export function formatDateTime(date: string | Date): string {
   });
 }
 
-export function validateEmail(email: string): boolean {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
-
-export function validatePhone(phone: string): boolean {
-  const phoneRegex = /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/;
-  return phoneRegex.test(phone);
-}
-
-export function validateAccountNumber(accountNumber: string): boolean {
-  return accountNumber.trim().length > 0;
-}
-
 export function getStatusColor(status: string): string {
   switch (status) {
     case "active":

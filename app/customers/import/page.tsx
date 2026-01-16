@@ -3,9 +3,21 @@
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Upload, FileSpreadsheet, CheckCircle2, XCircle } from "lucide-react";
+import {
+  ArrowLeft,
+  Upload,
+  FileSpreadsheet,
+  CheckCircle2,
+  XCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Navbar } from "@/components/navbar";
 import type { ImportResult } from "@/lib/types";
 
@@ -54,7 +66,10 @@ export default function ImportPage() {
 
     const extension = "." + selectedFile.name.split(".").pop()?.toLowerCase();
 
-    if (!validTypes.includes(selectedFile.type) && !validExtensions.includes(extension)) {
+    if (
+      !validTypes.includes(selectedFile.type) &&
+      !validExtensions.includes(extension)
+    ) {
       alert("Please upload a valid Excel or CSV file");
       return;
     }
@@ -122,8 +137,9 @@ export default function ImportPage() {
           <CardHeader>
             <CardTitle className="text-2xl">Import Customers</CardTitle>
             <CardDescription>
-              Import customers from Excel or CSV file. Required columns: name, account_number, phone.
-              Optional columns: nominee, nid, status, notes.
+              Import customers from Excel or CSV file. Required columns: name,
+              account_number, phone. Optional columns: nominee, nid, status,
+              notes.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -150,11 +166,15 @@ export default function ImportPage() {
                   <FileSpreadsheet className="mx-auto h-12 w-12 text-gray-400" />
                   <p className="mt-4 text-sm text-gray-600">
                     {file ? (
-                      <span className="font-medium text-gray-900">{file.name}</span>
+                      <span className="font-medium text-gray-900">
+                        {file.name}
+                      </span>
                     ) : (
                       <>
                         Drag and drop your file here, or{" "}
-                        <span className="font-medium text-blue-600">browse</span>
+                        <span className="font-medium text-blue-600">
+                          browse
+                        </span>
                       </>
                     )}
                   </p>
@@ -169,7 +189,11 @@ export default function ImportPage() {
                       <Upload className="mr-2 h-4 w-4" />
                       {loading ? "Importing..." : "Import"}
                     </Button>
-                    <Button variant="outline" onClick={handleReset} disabled={loading}>
+                    <Button
+                      variant="outline"
+                      onClick={handleReset}
+                      disabled={loading}
+                    >
                       Clear
                     </Button>
                   </div>
@@ -180,19 +204,25 @@ export default function ImportPage() {
                 <div className="grid gap-4 sm:grid-cols-3">
                   <Card>
                     <CardContent className="pt-6 text-center">
-                      <p className="text-3xl font-bold text-green-600">{result.success}</p>
+                      <p className="text-3xl font-bold text-green-600">
+                        {result.success}
+                      </p>
                       <p className="text-sm text-gray-600">Imported</p>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="pt-6 text-center">
-                      <p className="text-3xl font-bold text-red-600">{result.failed}</p>
+                      <p className="text-3xl font-bold text-red-600">
+                        {result.failed}
+                      </p>
                       <p className="text-sm text-gray-600">Failed</p>
                     </CardContent>
                   </Card>
                   <Card>
                     <CardContent className="pt-6 text-center">
-                      <p className="text-3xl font-bold text-gray-900">{result.success + result.failed}</p>
+                      <p className="text-3xl font-bold text-gray-900">
+                        {result.success + result.failed}
+                      </p>
                       <p className="text-sm text-gray-600">Total</p>
                     </CardContent>
                   </Card>
@@ -206,11 +236,18 @@ export default function ImportPage() {
                     <CardContent>
                       <div className="max-h-64 overflow-y-auto space-y-2">
                         {result.errors.map((error, index) => (
-                          <div key={index} className="flex items-start gap-2 text-sm">
+                          <div
+                            key={index}
+                            className="flex items-start gap-2 text-sm"
+                          >
                             <XCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
                             <div>
-                              <span className="font-medium">Row {error.row}:</span>{" "}
-                              <span className="text-gray-600">{error.error}</span>
+                              <span className="font-medium">
+                                Row {error.row}:
+                              </span>{" "}
+                              <span className="text-gray-600">
+                                {error.error}
+                              </span>
                             </div>
                           </div>
                         ))}
@@ -223,8 +260,9 @@ export default function ImportPage() {
                   <div className="flex items-center gap-2 text-green-700 bg-green-50 p-4 rounded-md">
                     <CheckCircle2 className="h-5 w-5" />
                     <p>
-                      {result.success} customer{result.success > 1 ? "s were" : " was"}{" "}
-                      successfully imported!
+                      {result.success} customer
+                      {result.success > 1 ? "s were" : " was"} successfully
+                      imported!
                     </p>
                   </div>
                 )}
