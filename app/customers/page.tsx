@@ -24,7 +24,9 @@ export default function CustomersPage() {
   const fetchCustomers = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/customers?search=${search}&page=${page}&limit=10`);
+      const response = await fetch(
+        `/api/customers?search=${search}&page=${page}&limit=10`
+      );
       const data = await response.json();
       setCustomers(data.data || []);
       setTotalPages(data.pagination?.totalPages || 1);
@@ -108,12 +110,17 @@ export default function CustomersPage() {
         ) : (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {customers.map((customer) => (
-              <Card key={customer.id} className="hover:shadow-md transition-shadow">
+              <Card
+                key={customer.id}
+                className="hover:shadow-md transition-shadow"
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-lg">{customer.name}</CardTitle>
-                      <p className="text-sm text-gray-600">{customer.account_number}</p>
+                      <p className="text-sm text-gray-600">
+                        {customer.account_number}
+                      </p>
                     </div>
                     <Badge
                       variant={customer.status as any}
@@ -125,24 +132,34 @@ export default function CustomersPage() {
                 </CardHeader>
                 <CardContent className="space-y-2">
                   <div className="flex items-center text-sm">
-                    <span className="font-medium text-gray-700 w-24">Phone:</span>
+                    <span className="font-medium text-gray-700 w-24">
+                      Phone:
+                    </span>
                     <span className="text-gray-900">{customer.phone}</span>
                   </div>
                   {customer.nominee && (
                     <div className="flex items-center text-sm">
-                      <span className="font-medium text-gray-700 w-24">Nominee:</span>
+                      <span className="font-medium text-gray-700 w-24">
+                        Nominee:
+                      </span>
                       <span className="text-gray-900">{customer.nominee}</span>
                     </div>
                   )}
                   {customer.nid && (
                     <div className="flex items-center text-sm">
-                      <span className="font-medium text-gray-700 w-24">NID:</span>
+                      <span className="font-medium text-gray-700 w-24">
+                        NID:
+                      </span>
                       <span className="text-gray-900">{customer.nid}</span>
                     </div>
                   )}
                   <div className="flex items-center text-sm">
-                    <span className="font-medium text-gray-700 w-24">Created:</span>
-                    <span className="text-gray-900">{formatDate(customer.created_at)}</span>
+                    <span className="font-medium text-gray-700 w-24">
+                      Created:
+                    </span>
+                    <span className="text-gray-900">
+                      {formatDate(customer.created_at)}
+                    </span>
                   </div>
                   <div className="flex gap-2 pt-3">
                     <Link href={`/customers/${customer.id}`} className="flex-1">
