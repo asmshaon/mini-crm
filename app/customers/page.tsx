@@ -50,7 +50,7 @@ export default function CustomersPage() {
 
   useEffect(() => {
     fetchCustomers();
-  });
+  }, [page]);
 
   const debouncedSearch = debounce((value: string) => {
     setSearch(value);

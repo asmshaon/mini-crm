@@ -22,7 +22,6 @@ import { Navbar } from "@/components/navbar";
 import type { ImportResult } from "@/lib/types";
 
 export default function ImportPage() {
-  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);

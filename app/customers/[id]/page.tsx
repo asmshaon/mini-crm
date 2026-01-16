@@ -8,7 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Navbar } from "@/components/navbar";
 import { formatDateTime } from "@/lib/utils";
@@ -174,7 +180,9 @@ export default function CustomerDetailPage() {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -184,7 +192,12 @@ export default function CustomerDetailPage() {
                   <Input
                     id="account_number"
                     value={formData.account_number}
-                    onChange={(e) => setFormData({ ...formData, account_number: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        account_number: e.target.value,
+                      })
+                    }
                     required
                   />
                 </div>
@@ -195,7 +208,9 @@ export default function CustomerDetailPage() {
                     id="phone"
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -205,7 +220,12 @@ export default function CustomerDetailPage() {
                   <Select
                     id="status"
                     value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as CustomerStatus })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        status: e.target.value as CustomerStatus,
+                      })
+                    }
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -218,7 +238,9 @@ export default function CustomerDetailPage() {
                   <Input
                     id="nominee"
                     value={formData.nominee}
-                    onChange={(e) => setFormData({ ...formData, nominee: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nominee: e.target.value })
+                    }
                   />
                 </div>
 
@@ -227,7 +249,9 @@ export default function CustomerDetailPage() {
                   <Input
                     id="nid"
                     value={formData.nid}
-                    onChange={(e) => setFormData({ ...formData, nid: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nid: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -238,7 +262,9 @@ export default function CustomerDetailPage() {
                   id="notes"
                   rows={4}
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
                 />
               </div>
 
