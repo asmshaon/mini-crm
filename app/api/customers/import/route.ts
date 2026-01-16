@@ -83,8 +83,7 @@ export async function POST(request: NextRequest) {
           created_by: user.id,
         };
 
-        const { error } = await supabase
-          .from("customers")
+        const { error } = await (supabase.from("customers") as any)
           .insert(customerData);
 
         if (error) {

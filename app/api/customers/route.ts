@@ -72,8 +72,7 @@ export async function POST(request: NextRequest) {
       created_by: user.id,
     };
 
-    const { data, error } = await supabase
-      .from("customers")
+    const { data, error } = await (supabase.from("customers") as any)
       .insert(customerData)
       .select()
       .single();

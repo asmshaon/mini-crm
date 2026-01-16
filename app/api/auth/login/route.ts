@@ -14,13 +14,15 @@ export async function POST(request: NextRequest) {
     }
 
     // Query user by email
-    const { data: user, error } = await supabase
+    const result = await supabase
       .from("users")
       .select("*")
       .eq("email", email)
       .single();
 
-    if (error || !user) {
+    const user = result.data as User & { password: string } | null;
+
+    if (result.error || !user) {
       return NextResponse.json(
         { success: false, message: "Invalid email or password" } as AuthResponse,
         { status: 401 }
@@ -28,7 +30,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify password (simple comparison - in production use bcrypt)
-    if ((user as User & { password: string }).password !== password) {
+    if (user.password !== password) {
       return NextResponse.json(
         { success: false, message: "Invalid email or password" } as AuthResponse,
         { status: 401 }

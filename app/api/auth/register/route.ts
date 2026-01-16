@@ -34,14 +34,15 @@ export async function POST(request: NextRequest) {
       name: name || null,
     };
 
-    const { data: user, error } = await supabase
-      .from("users")
+    const result = await (supabase.from("users") as any)
       .insert(newUser)
       .select()
       .single();
 
-    if (error) {
-      console.error("User creation error:", error);
+    const user = result.data;
+
+    if (result.error || !user) {
+      console.error("User creation error:", result.error);
       return NextResponse.json(
         { success: false, message: "Failed to create account" } as AuthResponse,
         { status: 500 }

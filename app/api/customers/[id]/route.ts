@@ -63,8 +63,7 @@ export async function PUT(
       notes: body.notes || null,
     };
 
-    const { data, error } = await supabase
-      .from("customers")
+    const { data, error } = await (supabase.from("customers") as any)
       .update(customerData)
       .eq("id", id)
       .select()
