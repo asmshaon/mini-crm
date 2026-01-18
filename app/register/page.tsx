@@ -50,8 +50,7 @@ export default function RegisterPage() {
     setSubmitting(true);
 
     try {
-      const response = await authApi.register(email, password, name || undefined);
-      const data = await response.json();
+      const data = await authApi.register(email, password, name || undefined);
 
       if (!data.success) {
         throw new Error(data.message || "Registration failed");

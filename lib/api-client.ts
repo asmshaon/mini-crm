@@ -1,20 +1,40 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
+function getToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('auth_token');
+}
+
+function setToken(token: string): void {
+  if (typeof window === 'undefined') return;
+  localStorage.setItem('auth_token', token);
+}
+
+function removeToken(): void {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem('auth_token');
+}
+
 export async function apiRequest(
   endpoint: string,
   options: RequestInit = {},
 ): Promise<Response> {
   const url = `${API_URL}${endpoint}`;
+  const token = getToken();
 
-  const defaultOptions: RequestInit = {
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...options.headers as Record<string, string>,
   };
 
-  const response = await fetch(url, { ...defaultOptions, ...options });
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(url, {
+    ...options,
+    headers,
+  });
 
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'An error occurred' }));
@@ -26,22 +46,37 @@ export async function apiRequest(
 
 // Auth API
 export const authApi = {
-  login: (email: string, password: string) =>
-    apiRequest('/auth/login', {
+  login: async (email: string, password: string) => {
+    const response = await apiRequest('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
-    }),
+    });
+    const data = await response.json();
+    if (data.token) {
+      setToken(data.token);
+    }
+    return data;
+  },
 
-  register: (email: string, password: string, name?: string) =>
-    apiRequest('/auth/register', {
+  register: async (email: string, password: string, name?: string) => {
+    const response = await apiRequest('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ email, password, name }),
-    }),
+    });
+    const data = await response.json();
+    if (data.token) {
+      setToken(data.token);
+    }
+    return data;
+  },
 
-  logout: () =>
-    apiRequest('/auth/logout', {
+  logout: async () => {
+    removeToken();
+    const response = await apiRequest('/auth/logout', {
       method: 'POST',
-    }),
+    });
+    return response.json();
+  },
 
   getMe: () =>
     apiRequest('/auth/me'),
@@ -92,9 +127,15 @@ export const customersApi = {
     const formData = new FormData();
     formData.append('file', file);
 
+    const token = getToken();
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${API_URL}/customers/import`, {
       method: 'POST',
-      credentials: 'include',
+      headers,
       body: formData,
     });
 

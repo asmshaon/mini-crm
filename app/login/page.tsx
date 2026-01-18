@@ -30,8 +30,7 @@ export default function LoginPage() {
     setSubmitting(true);
 
     try {
-      const response = await authApi.login(email, password);
-      const data = await response.json();
+      const data = await authApi.login(email, password);
 
       if (!data.success) {
         throw new Error(data.message || "Login failed");
