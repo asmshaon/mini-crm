@@ -13,6 +13,7 @@ import { Select } from "@/components/ui/select";
 import { Navbar } from "@/components/navbar";
 import type { CustomerStatus } from "@/lib/types";
 import { toast } from "sonner";
+import { customersApi } from "@/lib/api-client";
 
 export default function NewCustomerPage() {
   const router = useRouter();
@@ -32,18 +33,8 @@ export default function NewCustomerPage() {
     const toastId = toast.loading("Creating customer...");
 
     try {
-      const response = await fetch("/api/customers", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
+      const response = await customersApi.create(formData);
       const data = await response.json();
-
-      if (!response.ok) {
-        toast.error(data.error || "Failed to create customer", { id: toastId });
-        return;
-      }
 
       toast.success("Customer created successfully", { id: toastId });
       setTimeout(() => router.push("/customers"), 500);

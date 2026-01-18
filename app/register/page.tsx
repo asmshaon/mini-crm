@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth-context";
+import { authApi } from "@/lib/api-client";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -49,15 +50,10 @@ export default function RegisterPage() {
     setSubmitting(true);
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
-
+      const response = await authApi.register(email, password, name || undefined);
       const data = await response.json();
 
-      if (!response.ok) {
+      if (!data.success) {
         throw new Error(data.message || "Registration failed");
       }
 

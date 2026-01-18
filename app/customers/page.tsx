@@ -13,6 +13,7 @@ import { formatDate, getStatusColor, debounce } from "@/lib/utils";
 import type { Customer } from "@/lib/types";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/dialog";
+import { customersApi } from "@/lib/api-client";
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -34,9 +35,7 @@ export default function CustomersPage() {
   const fetchCustomers = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `/api/customers?search=${search}&page=${page}&limit=10`
-      );
+      const response = await customersApi.list(search, page, 10);
       const data = await response.json();
       setCustomers(data.data || []);
       setTotalPages(data.pagination?.totalPages || 1);
@@ -74,16 +73,7 @@ export default function CustomersPage() {
     const toastId = toast.loading("Deleting customer...");
 
     try {
-      const response = await fetch(`/api/customers/${customerId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        toast.error("Failed to delete customer", { id: toastId });
-        setDeleteDialog({ isOpen: false, customerId: null, customerName: "" });
-        return;
-      }
-
+      await customersApi.delete(customerId);
       toast.success("Customer deleted successfully", { id: toastId });
       setDeleteDialog({ isOpen: false, customerId: null, customerName: "" });
       fetchCustomers();

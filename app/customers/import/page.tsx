@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/card";
 import { Navbar } from "@/components/navbar";
 import type { ImportResult } from "@/lib/types";
+import { customersApi } from "@/lib/api-client";
 
 export default function ImportPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -88,21 +89,8 @@ export default function ImportPage() {
     setLoading(true);
     setResult(null);
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
-      const response = await fetch("/api/customers/import", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Import failed");
-      }
-
+      const data = await customersApi.import(file);
       setResult(data);
     } catch (error) {
       alert(error instanceof Error ? error.message : "Import failed");

@@ -21,6 +21,7 @@ import { formatDateTime } from "@/lib/utils";
 import type { Customer, CustomerStatus } from "@/lib/types";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/dialog";
+import { customersApi } from "@/lib/api-client";
 
 export default function CustomerDetailPage() {
   const router = useRouter();
@@ -48,12 +49,8 @@ export default function CustomerDetailPage() {
   const fetchCustomer = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/customers/${id}`);
+      const response = await customersApi.get(id);
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to fetch customer");
-      }
 
       setCustomer(data.data);
       setFormData({
@@ -78,18 +75,8 @@ export default function CustomerDetailPage() {
     const toastId = toast.loading("Saving customer...");
 
     try {
-      const response = await fetch(`/api/customers/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
+      const response = await customersApi.update(id, formData);
       const data = await response.json();
-
-      if (!response.ok) {
-        toast.error(data.error || "Failed to update customer", { id: toastId });
-        return;
-      }
 
       setCustomer(data.data);
       toast.success("Customer updated successfully", { id: toastId });
@@ -106,16 +93,7 @@ export default function CustomerDetailPage() {
     const toastId = toast.loading("Deleting customer...");
 
     try {
-      const response = await fetch(`/api/customers/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        toast.error("Failed to delete customer", { id: toastId });
-        setDeleteDialog(false);
-        return;
-      }
-
+      await customersApi.delete(id);
       toast.success("Customer deleted successfully", { id: toastId });
       setDeleteDialog(false);
       setTimeout(() => router.push("/customers"), 500);

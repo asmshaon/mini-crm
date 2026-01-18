@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import { authApi } from "./api-client";
 
 interface User {
   id: string;
@@ -42,11 +43,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   async function checkAuth() {
     try {
-      const res = await fetch("/api/auth/me");
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.data);
-      }
+      const res = await authApi.getMe();
+      const data = await res.json();
+      setUser(data.data);
     } catch (error) {
       console.error("Auth check failed:", error);
     } finally {
@@ -59,7 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function logout() {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await authApi.logout();
     setUser(null);
     router.push("/login");
   }
