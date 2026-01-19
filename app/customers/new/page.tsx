@@ -142,7 +142,9 @@ export default function NewCustomerPage() {
               </div>
 
               <div className="flex gap-3">
-                <Button type="submit" disabled={isSubmitting}>Create Customer</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Creating..." : "Create Customer"}
+                </Button>
                 <Link href="/customers">
                   <Button type="button" variant="outline">
                     Cancel

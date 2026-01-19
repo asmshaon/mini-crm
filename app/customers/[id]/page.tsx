@@ -251,7 +251,9 @@ export default function CustomerDetailPage() {
               </div>
 
               <div className="flex gap-3">
-                <Button type="submit" disabled={isSubmitting}>Save Changes</Button>
+                <Button type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? "Saving..." : "Save Changes"}
+                </Button>
                 <Link href="/customers">
                   <Button type="button" variant="outline">
                     Cancel
