@@ -32,16 +32,14 @@ export default function NewCustomerPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const toastId = toast.loading("Creating customer...");
-
     try {
       const response = await customersApi.create(formData);
       const data = await response.json();
 
-      toast.success("Customer created successfully", { id: toastId });
+      toast.success("Customer created successfully");
       setTimeout(() => router.push("/customers"), 500);
     } catch (err) {
-      toast.error("Failed to create customer", { id: toastId });
+      toast.error("Failed to create customer");
     } finally {
       setIsSubmitting(false);
     }

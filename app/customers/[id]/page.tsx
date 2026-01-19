@@ -74,16 +74,14 @@ export default function CustomerDetailPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const toastId = toast.loading("Saving customer...");
-
     try {
       const response = await customersApi.update(id, formData);
       const data = await response.json();
 
       setCustomer(data.data);
-      toast.success("Customer updated successfully", { id: toastId });
+      toast.success("Customer updated successfully");
     } catch (err) {
-      toast.error("Failed to update customer", { id: toastId });
+      toast.error("Failed to update customer");
     } finally {
       setIsSubmitting(false);
     }
