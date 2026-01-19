@@ -29,6 +29,7 @@ export default function CustomerDetailPage() {
   const id = params.id as string;
 
   const [customer, setCustomer] = useState<Customer | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     account_number: "",
@@ -71,6 +72,7 @@ export default function CustomerDetailPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const toastId = toast.loading("Saving customer...");
 
@@ -82,6 +84,8 @@ export default function CustomerDetailPage() {
       toast.success("Customer updated successfully", { id: toastId });
     } catch (err) {
       toast.error("Failed to update customer", { id: toastId });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -247,7 +251,7 @@ export default function CustomerDetailPage() {
               </div>
 
               <div className="flex gap-3">
-                <Button type="submit">Save Changes</Button>
+                <Button type="submit" disabled={isSubmitting}>Save Changes</Button>
                 <Link href="/customers">
                   <Button type="button" variant="outline">
                     Cancel

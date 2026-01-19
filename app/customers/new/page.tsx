@@ -17,6 +17,7 @@ import { customersApi } from "@/lib/api-client";
 
 export default function NewCustomerPage() {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     account_number: "",
@@ -29,6 +30,7 @@ export default function NewCustomerPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
     const toastId = toast.loading("Creating customer...");
 
@@ -40,6 +42,8 @@ export default function NewCustomerPage() {
       setTimeout(() => router.push("/customers"), 500);
     } catch (err) {
       toast.error("Failed to create customer", { id: toastId });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -138,7 +142,7 @@ export default function NewCustomerPage() {
               </div>
 
               <div className="flex gap-3">
-                <Button type="submit">Create Customer</Button>
+                <Button type="submit" disabled={isSubmitting}>Create Customer</Button>
                 <Link href="/customers">
                   <Button type="button" variant="outline">
                     Cancel
