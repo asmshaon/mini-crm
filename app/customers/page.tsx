@@ -180,9 +180,7 @@ export default function CustomersPage() {
                     <span className="font-medium text-gray-700 w-24">
                       Created:
                     </span>
-                    <span className="text-gray-900">
-                      {formatDate(customer.created_at)}
-                    </span>
+                    <span className="text-gray-900">{customer.created_at}</span>
                   </div>
                   <div className="flex gap-2 pt-3">
                     <Link href={`/customers/${customer.id}`} className="flex-1">

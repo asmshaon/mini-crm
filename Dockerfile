@@ -4,6 +4,23 @@ FROM node:24-alpine AS base
 # Install pnpm
 RUN npm install -g pnpm
 
+# Development stage
+FROM base AS development
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies
+RUN pnpm install
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["pnpm", "dev"]
+
 # Dependencies only
 FROM base AS deps
 WORKDIR /app
