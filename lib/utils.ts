@@ -5,10 +5,23 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: string | Date): string {
+export function formatDate(
+  date: string | Date,
+  format: string = "Y-m-d",
+): string {
   const d = typeof date === "string" ? new Date(date) : date;
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
 
-  console.log("D", d);
+  if (format === "Y-m-d H:i") {
+    return `${year}-${month}-${day} ${hours}:${minutes}`;
+  }
+  if (format === "Y-m-d") {
+    return `${year}-${month}-${day}`;
+  }
 
   return d.toLocaleDateString("en-US", {
     year: "numeric",
@@ -20,7 +33,6 @@ export function formatDate(date: string | Date): string {
 export function formatDateTime(date: string | Date): string {
   const d = typeof date === "string" ? new Date(date) : date;
 
-  console.log("DD", d);
   return d.toLocaleString("en-US", {
     year: "numeric",
     month: "short",

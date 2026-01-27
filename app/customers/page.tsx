@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search, Plus, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Navbar } from "@/components/navbar";
-import { formatDate, getStatusColor, debounce } from "@/lib/utils";
+import { getStatusColor, debounce, formatDateTime } from "@/lib/utils";
 import type { Customer } from "@/lib/types";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/dialog";
@@ -32,10 +31,10 @@ export default function CustomersPage() {
     customerName: "",
   });
 
-  const fetchCustomers = async () => {
+  const fetchCustomers = async (searchQuery?: string) => {
     setLoading(true);
     try {
-      const response = await customersApi.list(search, page, 10);
+      const response = await customersApi.list(searchQuery ?? search, page, 10);
       const data = await response.json();
       setCustomers(data.data || []);
       setTotalPages(data.pagination?.totalPages || 1);
@@ -54,7 +53,7 @@ export default function CustomersPage() {
   const debouncedSearch = debounce((value: string) => {
     setSearch(value);
     setPage(1);
-    fetchCustomers();
+    fetchCustomers(value);
   }, 300);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -180,7 +179,9 @@ export default function CustomersPage() {
                     <span className="font-medium text-gray-700 w-24">
                       Created:
                     </span>
-                    <span className="text-gray-900">{customer.created_at}</span>
+                    <span className="text-gray-900">
+                      {formatDateTime(customer.created_at)}
+                    </span>
                   </div>
                   <div className="flex gap-2 pt-3">
                     <Link href={`/customers/${customer.id}`} className="flex-1">
