@@ -92,7 +92,7 @@ export const customersApi = {
 
   create: (data: {
     name: string;
-    account_number: string;
+    accountNumber: string;
     phone: string;
     nominee?: string;
     nid?: string;
@@ -106,7 +106,7 @@ export const customersApi = {
 
   update: (id: string, data: {
     name?: string;
-    account_number?: string;
+    accountNumber?: string;
     phone?: string;
     nominee?: string;
     nid?: string;

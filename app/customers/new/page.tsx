@@ -20,7 +20,7 @@ export default function NewCustomerPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    account_number: "",
+    accountNumber: "",
     phone: "",
     nominee: "",
     nid: "",
@@ -32,6 +32,8 @@ export default function NewCustomerPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
+    console.log("Submitting form data:", formData);
+
     try {
       const response = await customersApi.create(formData);
       const data = await response.json();
@@ -39,7 +41,11 @@ export default function NewCustomerPage() {
       toast.success("Customer created successfully");
       setTimeout(() => router.push("/customers"), 500);
     } catch (err) {
-      toast.error("Failed to create customer");
+      console.error("Create customer error:", err);
+      const errorMessage = err && typeof err === 'object' && 'message' in err
+        ? (err as { message: string }).message
+        : "Failed to create customer";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -77,11 +83,11 @@ export default function NewCustomerPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="account_number">Account Number *</Label>
+                  <Label htmlFor="accountNumber">Account Number *</Label>
                   <Input
-                    id="account_number"
-                    value={formData.account_number}
-                    onChange={(e) => setFormData({ ...formData, account_number: e.target.value })}
+                    id="accountNumber"
+                    value={formData.accountNumber}
+                    onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
                     required
                   />
                 </div>

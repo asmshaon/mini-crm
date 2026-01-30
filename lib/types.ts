@@ -31,7 +31,7 @@ export type Database = {
         Row: {
           id: string;
           name: string;
-          account_number: string;
+          accountNumber: string;
           phone: string;
           nominee: string | null;
           nid: string | null;
@@ -44,7 +44,7 @@ export type Database = {
         Insert: {
           id?: string;
           name: string;
-          account_number: string;
+          accountNumber: string;
           phone: string;
           nominee?: string | null;
           nid?: string | null;
@@ -57,7 +57,7 @@ export type Database = {
         Update: {
           id?: string;
           name?: string;
-          account_number?: string;
+          accountNumber?: string;
           phone?: string;
           nominee?: string | null;
           nid?: string | null;
@@ -84,7 +84,7 @@ export type CustomerStatus = "active" | "inactive" | "lead";
 
 export interface CustomerFormData {
   name: string;
-  account_number: string;
+  accountNumber: string;
   phone: string;
   nominee?: string;
   nid?: string;
