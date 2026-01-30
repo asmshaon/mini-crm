@@ -32,7 +32,7 @@ export default function CustomerDetailPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    accountNumber: "",
+    account_number: "",
     phone: "",
     nominee: "",
     nid: "",
@@ -56,7 +56,7 @@ export default function CustomerDetailPage() {
       setCustomer(data.data);
       setFormData({
         name: data.data.name,
-        accountNumber: data.data.accountNumber,
+        account_number: data.data.account_number,
         phone: data.data.phone,
         nominee: data.data.nominee || "",
         nid: data.data.nid || "",
@@ -168,14 +168,14 @@ export default function CustomerDetailPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="accountNumber">Account Number *</Label>
+                  <Label htmlFor="account_number">Account Number *</Label>
                   <Input
-                    id="accountNumber"
-                    value={formData.accountNumber}
+                    id="account_number"
+                    value={formData.account_number}
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        accountNumber: e.target.value,
+                        account_number: e.target.value,
                       })
                     }
                     required

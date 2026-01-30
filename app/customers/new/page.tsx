@@ -8,7 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Navbar } from "@/components/navbar";
 import type { CustomerStatus } from "@/lib/types";
@@ -20,7 +26,7 @@ export default function NewCustomerPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    accountNumber: "",
+    account_number: "",
     phone: "",
     nominee: "",
     nid: "",
@@ -32,8 +38,6 @@ export default function NewCustomerPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    console.log("Submitting form data:", formData);
-
     try {
       const response = await customersApi.create(formData);
       const data = await response.json();
@@ -41,10 +45,10 @@ export default function NewCustomerPage() {
       toast.success("Customer created successfully");
       setTimeout(() => router.push("/customers"), 500);
     } catch (err) {
-      console.error("Create customer error:", err);
-      const errorMessage = err && typeof err === 'object' && 'message' in err
-        ? (err as { message: string }).message
-        : "Failed to create customer";
+      const errorMessage =
+        err && typeof err === "object" && "message" in err
+          ? (err as { message: string }).message
+          : "Failed to create customer";
       toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -77,17 +81,24 @@ export default function NewCustomerPage() {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="accountNumber">Account Number *</Label>
+                  <Label htmlFor="account_number">Account Number *</Label>
                   <Input
-                    id="accountNumber"
-                    value={formData.accountNumber}
-                    onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
+                    id="account_number"
+                    value={formData.account_number}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        account_number: e.target.value,
+                      })
+                    }
                     required
                   />
                 </div>
@@ -98,7 +109,9 @@ export default function NewCustomerPage() {
                     id="phone"
                     type="tel"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, phone: e.target.value })
+                    }
                     required
                   />
                 </div>
@@ -108,7 +121,12 @@ export default function NewCustomerPage() {
                   <Select
                     id="status"
                     value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as CustomerStatus })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        status: e.target.value as CustomerStatus,
+                      })
+                    }
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -121,7 +139,9 @@ export default function NewCustomerPage() {
                   <Input
                     id="nominee"
                     value={formData.nominee}
-                    onChange={(e) => setFormData({ ...formData, nominee: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nominee: e.target.value })
+                    }
                   />
                 </div>
 
@@ -130,7 +150,9 @@ export default function NewCustomerPage() {
                   <Input
                     id="nid"
                     value={formData.nid}
-                    onChange={(e) => setFormData({ ...formData, nid: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nid: e.target.value })
+                    }
                   />
                 </div>
               </div>
@@ -141,7 +163,9 @@ export default function NewCustomerPage() {
                   id="notes"
                   rows={4}
                   value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, notes: e.target.value })
+                  }
                 />
               </div>
 

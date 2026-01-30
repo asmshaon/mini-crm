@@ -141,7 +141,7 @@ export default function CustomersPage() {
                     <div className="flex-1">
                       <CardTitle className="text-lg">{customer.name}</CardTitle>
                       <p className="text-sm text-gray-600">
-                        {customer.accountNumber}
+                        {customer.account_number}
                       </p>
                     </div>
                     <Badge
