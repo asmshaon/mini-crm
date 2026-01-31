@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Search, Plus, Edit, Trash2 } from "lucide-react";
+import { Search, Plus, Edit, Trash2, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -137,19 +137,34 @@ export default function CustomersPage() {
                 className="hover:shadow-md transition-shadow"
               >
                 <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg">{customer.name}</CardTitle>
-                      <p className="text-sm text-gray-600">
-                        {customer.account_number}
-                      </p>
+                  <div className="flex items-start gap-4">
+                    {customer.photo ? (
+                      <img
+                        src={customer.photo}
+                        alt={customer.name}
+                        className="h-14 w-14 rounded-full object-cover border-2 border-gray-200"
+                      />
+                    ) : (
+                      <div className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white font-semibold text-lg border-2 border-gray-200">
+                        {customer.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <CardTitle className="text-lg truncate">{customer.name}</CardTitle>
+                          <p className="text-sm text-gray-600 truncate">
+                            {customer.account_number}
+                          </p>
+                        </div>
+                        <Badge
+                          variant={customer.status as any}
+                          className={getStatusColor(customer.status)}
+                        >
+                          {customer.status}
+                        </Badge>
+                      </div>
                     </div>
-                    <Badge
-                      variant={customer.status as any}
-                      className={getStatusColor(customer.status)}
-                    >
-                      {customer.status}
-                    </Badge>
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-2">

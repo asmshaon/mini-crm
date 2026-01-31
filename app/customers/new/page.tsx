@@ -17,13 +17,18 @@ import {
 } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Navbar } from "@/components/navbar";
+import { PhotoUpload } from "@/components/photo-upload";
 import type { CustomerStatus } from "@/lib/types";
 import { toast } from "sonner";
 import { customersApi } from "@/lib/api-client";
+import { createClient } from "@/lib/supabase/client";
 
 export default function NewCustomerPage() {
   const router = useRouter();
+  const supabase = createClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string>("");
   const [formData, setFormData] = useState({
     name: "",
     account_number: "",
@@ -34,12 +39,51 @@ export default function NewCustomerPage() {
     notes: "",
   });
 
+  const handlePhotoUpload = async (file: File): Promise<string> => {
+    setIsUploading(true);
+    try {
+      // Get Supabase access token
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error("Not authenticated");
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/customers/upload-photo`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to upload photo");
+      }
+
+      const data = await response.json();
+      toast.success("Photo uploaded successfully");
+      return data.url;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      const response = await customersApi.create(formData);
+      const response = await customersApi.create({
+        ...formData,
+        photo: photoUrl || undefined,
+      });
       const data = await response.json();
 
       toast.success("Customer created successfully");
@@ -156,6 +200,14 @@ export default function NewCustomerPage() {
                   />
                 </div>
               </div>
+
+              {/* Photo Upload */}
+              <PhotoUpload
+                value={photoUrl}
+                onChange={setPhotoUrl}
+                isUploading={isUploading}
+                onUpload={handlePhotoUpload}
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="notes">Notes</Label>

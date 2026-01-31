@@ -5,10 +5,23 @@ import { usePathname } from "next/navigation";
 import { Button } from "./ui/button";
 import { LayoutDashboard, Users, UserPlus, Upload, LogOut } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import type { User } from "@supabase/supabase-js";
+
+// Helper to get display name from Supabase user
+function getUserDisplayName(user: User | null): string {
+  if (!user) return "";
+  // Check user metadata for name (set during registration)
+  if (user.user_metadata?.name) {
+    return user.user_metadata.name;
+  }
+  // Fall back to email
+  return user.email || "";
+}
 
 export function Navbar() {
   const pathname = usePathname();
   const { user, logout, loading } = useAuth();
+  const displayName = getUserDisplayName(user);
 
   const navItems = [
     {
@@ -41,6 +54,9 @@ export function Navbar() {
           <div className="flex items-center space-x-4">
             {!loading && user ? (
               <>
+                <span className="text-sm text-gray-600">
+                  {displayName}
+                </span>
                 {navItems.map((item) => {
                   const Icon = item.icon;
                   const isActive = pathname?.startsWith(item.href);

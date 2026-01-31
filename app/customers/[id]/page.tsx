@@ -17,19 +17,24 @@ import {
 } from "@/components/ui/card";
 import { Select } from "@/components/ui/select";
 import { Navbar } from "@/components/navbar";
+import { PhotoUpload } from "@/components/photo-upload";
 import { formatDateTime } from "@/lib/utils";
 import type { Customer, CustomerStatus } from "@/lib/types";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { customersApi } from "@/lib/api-client";
+import { createClient } from "@/lib/supabase/client";
 
 export default function CustomerDetailPage() {
   const router = useRouter();
   const params = useParams();
   const id = params.id as string;
+  const supabase = createClient();
 
   const [customer, setCustomer] = useState<Customer | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState<string>("");
   const [formData, setFormData] = useState({
     name: "",
     account_number: "",
@@ -63,10 +68,47 @@ export default function CustomerDetailPage() {
         status: data.data.status,
         notes: data.data.notes || "",
       });
+      setPhotoUrl(data.data.photo || "");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch customer");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePhotoUpload = async (file: File): Promise<string> => {
+    setIsUploading(true);
+    try {
+      // Get Supabase access token
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error("Not authenticated");
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/customers/upload-photo`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Failed to upload photo");
+      }
+
+      const data = await response.json();
+      toast.success("Photo uploaded successfully");
+      return data.url;
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -75,7 +117,10 @@ export default function CustomerDetailPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await customersApi.update(id, formData);
+      const response = await customersApi.update(id, {
+        ...formData,
+        photo: photoUrl || undefined,
+      });
       const data = await response.json();
 
       setCustomer(data.data);
@@ -235,6 +280,14 @@ export default function CustomerDetailPage() {
                   />
                 </div>
               </div>
+
+              {/* Photo Upload */}
+              <PhotoUpload
+                value={photoUrl}
+                onChange={setPhotoUrl}
+                isUploading={isUploading}
+                onUpload={handlePhotoUpload}
+              />
 
               <div className="space-y-2">
                 <Label htmlFor="notes">Notes</Label>

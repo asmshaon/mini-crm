@@ -8,69 +8,57 @@ import {
   ReactNode,
 } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { authApi } from "./api-client";
-
-interface User {
-  id: string;
-  email: string;
-  name: string | null;
-}
+import { createClient } from "./supabase/client";
+import type { User } from "@supabase/supabase-js";
 
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (user: User) => void;
   logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const publicPaths = ["/", "/login", "/register"];
+// Note: Route protection is now handled by middleware.ts
+// This context is mainly for accessing the current user in components
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+  const supabase = createClient();
 
   useEffect(() => {
-    checkAuth();
-  }, []);
-
-  useEffect(() => {
-    if (!loading) {
-      if (!user && !publicPaths.includes(pathname)) {
-        router.push("/login");
-      } else if (user && (pathname === "/login" || pathname === "/register")) {
-        router.push("/customers");
-      }
-    }
-  }, [user, loading, pathname, router]);
-
-  async function checkAuth() {
-    try {
-      const res = await authApi.getMe();
-      const data = await res.json();
-      setUser(data.data);
-    } catch (error) {
-      console.error("Auth check failed:", error);
-    } finally {
+    // Get initial session
+    const getSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
       setLoading(false);
-    }
-  }
+    };
 
-  function login(userData: User) {
-    setUser(userData);
-  }
+    getSession();
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   async function logout() {
-    await authApi.logout();
+    await supabase.auth.signOut();
     setUser(null);
     router.push("/login");
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout }}>
       {children}
     </AuthContext.Provider>
   );

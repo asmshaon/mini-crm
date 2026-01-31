@@ -1,18 +1,21 @@
+import { createClient } from './supabase/client';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-function getToken(): string | null {
+// Get Supabase access token for API requests
+async function getAccessToken(): Promise<string | null> {
   if (typeof window === 'undefined') return null;
-  return localStorage.getItem('auth_token');
-}
 
-function setToken(token: string): void {
-  if (typeof window === 'undefined') return;
-  localStorage.setItem('auth_token', token);
-}
+  try {
+    const supabase = createClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-function removeToken(): void {
-  if (typeof window === 'undefined') return;
-  localStorage.removeItem('auth_token');
+    return session?.access_token ?? null;
+  } catch {
+    return null;
+  }
 }
 
 export async function apiRequest(
@@ -20,11 +23,11 @@ export async function apiRequest(
   options: RequestInit = {},
 ): Promise<Response> {
   const url = `${API_URL}${endpoint}`;
-  const token = getToken();
+  const token = await getAccessToken();
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers as Record<string, string>,
+    ...options.headers,
   };
 
   if (token) {
@@ -44,45 +47,28 @@ export async function apiRequest(
   return response;
 }
 
-// Auth API
+// Note: Auth is now handled by Supabase directly
+// Login/Register pages will use Supabase client methods
+// These exports are kept for compatibility but will be removed
 export const authApi = {
-  login: async (email: string, password: string) => {
-    const response = await apiRequest('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
-    const data = await response.json();
-    if (data.token) {
-      setToken(data.token);
-    }
-    return data;
+  login: async () => {
+    throw new Error('Use Supabase auth directly. See login page for example.');
   },
 
-  register: async (email: string, password: string, name?: string) => {
-    const response = await apiRequest('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, name }),
-    });
-    const data = await response.json();
-    if (data.token) {
-      setToken(data.token);
-    }
-    return data;
+  register: async () => {
+    throw new Error('Use Supabase auth directly. See register page for example.');
   },
 
   logout: async () => {
-    removeToken();
-    const response = await apiRequest('/auth/logout', {
-      method: 'POST',
-    });
-    return response.json();
+    throw new Error('Use Supabase auth directly. See auth-context.tsx for example.');
   },
 
-  getMe: () =>
-    apiRequest('/auth/me'),
+  getMe: async () => {
+    throw new Error('Use Supabase auth directly. See auth-context.tsx for example.');
+  },
 };
 
-// Customers API
+// Customers API - now uses Supabase access token
 export const customersApi = {
   list: (search: string, page: number, limit: number) =>
     apiRequest(`/customers?search=${encodeURIComponent(search)}&page=${page}&limit=${limit}`),
@@ -98,6 +84,7 @@ export const customersApi = {
     nid?: string;
     status?: 'active' | 'inactive' | 'lead';
     notes?: string;
+    photo?: string;
   }) =>
     apiRequest('/customers', {
       method: 'POST',
@@ -112,6 +99,7 @@ export const customersApi = {
     nid?: string;
     status?: 'active' | 'inactive' | 'lead';
     notes?: string;
+    photo?: string;
   }) =>
     apiRequest(`/customers/${id}`, {
       method: 'PUT',
@@ -127,7 +115,7 @@ export const customersApi = {
     const formData = new FormData();
     formData.append('file', file);
 
-    const token = getToken();
+    const token = await getAccessToken();
     const headers: Record<string, string> = {};
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;

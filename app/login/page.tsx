@@ -8,11 +8,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/lib/auth-context";
-import { authApi } from "@/lib/api-client";
+import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user, loading, login } = useAuth();
+  const { user, loading } = useAuth();
+  const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -28,19 +30,24 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setSubmitting(true);
+    const toastId = toast.loading("Logging in...");
 
     try {
-      const data = await authApi.login(email, password);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      if (!data.success) {
-        throw new Error(data.message || "Login failed");
+      if (error) {
+        throw error;
       }
 
-      // Set user in context immediately
-      login(data.data);
+      toast.success("Logged in successfully", { id: toastId });
       router.push("/customers");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      const message = err instanceof Error ? err.message : "Login failed";
+      setError(message);
+      toast.error(message, { id: toastId });
     } finally {
       setSubmitting(false);
     }
@@ -71,6 +78,7 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                autoComplete="email"
               />
             </div>
             <div className="space-y-2">
@@ -82,6 +90,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                autoComplete="current-password"
               />
             </div>
           </CardContent>

@@ -37,6 +37,7 @@ export type Database = {
           nid: string | null;
           status: "active" | "inactive" | "lead";
           notes: string | null;
+          photo: string | null;
           created_at: string;
           updated_at: string;
           created_by: string | null;
@@ -50,6 +51,7 @@ export type Database = {
           nid?: string | null;
           status?: "active" | "inactive" | "lead";
           notes?: string | null;
+          photo?: string | null;
           created_at?: string;
           updated_at?: string;
           created_by?: string | null;
@@ -63,6 +65,7 @@ export type Database = {
           nid?: string | null;
           status?: "active" | "inactive" | "lead";
           notes?: string | null;
+          photo?: string | null;
           created_at?: string;
           updated_at?: string;
           created_by?: string | null;
@@ -90,6 +93,7 @@ export interface CustomerFormData {
   nid?: string;
   status: CustomerStatus;
   notes?: string;
+  photo?: string;
 }
 
 export interface ImportResult {
