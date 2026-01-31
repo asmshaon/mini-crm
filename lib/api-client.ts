@@ -25,13 +25,11 @@ export async function apiRequest(
   const url = `${API_URL}${endpoint}`;
   const token = await getAccessToken();
 
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...options.headers,
-  };
+  const headers = new Headers(options.headers);
+  headers.set('Content-Type', 'application/json');
 
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    headers.set('Authorization', `Bearer ${token}`);
   }
 
   const response = await fetch(url, {
